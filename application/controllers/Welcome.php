@@ -429,6 +429,144 @@ class Welcome extends CI_Controller
 			redirect('Welcome/login', 'refresh');
 		}
 	}
+// Existing CodeIgniter Controller...
+
+public function google_login()
+{
+    // 1. Load the Configuration
+    $this->config->load('google_oauth');
+    
+    // 2. Include Manual Autoloader
+    require_once APPPATH . 'libraries/Google/src/autoload.php';
+
+    // 3. Setup Client
+    $client = new Google\Client();
+    $client->setClientId($this->config->item('google_client_id'));
+    $client->setClientSecret($this->config->item('google_client_secret'));
+    $client->setRedirectUri($this->config->item('google_redirect_uri'));
+
+    foreach ($this->config->item('google_scopes') as $scope) {
+        $client->addScope($scope);
+    }
+
+    // 4. Generate State and Authorization URL
+    $state = bin2hex(random_bytes(16));
+    $this->session->set_userdata('oauth_state', $state); 
+    
+    $authUrl = $client->createAuthUrl() . '&state=' . $state; 
+
+    // 5. Redirect to Google's sign-in page
+    redirect($authUrl, 'refresh');
+}
+
+// Existing CodeIgniter Controller...
+
+public function google_callback()
+{
+    // 1. Load the Configuration
+    $this->config->load('google_oauth');
+    
+    // 2. Include Manual Autoloader
+    require_once APPPATH . 'libraries/Google/src/autoload.php';
+
+    // 3. Check for Code and State
+    $code = $this->input->get('code');
+    $state = $this->input->get('state');
+    $session_state = $this->session->userdata('oauth_state');
+
+    if (!$code || !$state || $state !== $session_state) {
+        $this->session->unset_userdata('oauth_state');
+        // Handle CSRF or error
+        echo "<script>alert('Authentication error or invalid request.');</script>";
+        redirect('Welcome/login', 'refresh');
+        return;
+    }
+    $this->session->unset_userdata('oauth_state');
+
+    // 4. Setup Client
+    $client = new Google\Client();
+    $client->setClientId($this->config->item('google_client_id'));
+    $client->setClientSecret($this->config->item('google_client_secret'));
+    $client->setRedirectUri($this->config->item('google_redirect_uri'));
+
+    try {
+        // 5. Exchange the code for tokens
+        $client->fetchAccessTokenWithAuthCode($code);
+        
+        // 6. Fetch User Profile Data
+        $oauth = new Google\Service\Oauth2($client);
+        $user_info = $oauth->userinfo->get();
+        
+        $google_email = $user_info->email;
+        $google_name = $user_info->name;
+        // The ID token contains the unique Google ID: $user_info->id
+
+        // 7. Core Login Logic (Integration with your existing system)
+        
+        // **a. Check if user exists in your database using $google_email**
+        if ($this->Usermodel->check_google_user($google_email)) {
+            // User exists, log them in
+            $this->perform_google_login($google_email);
+        } else {
+            // **b. User is new, register them**
+            // IMPORTANT: You need a model method to handle registration
+            $new_user_id = $this->Usermodel->register_google_user($google_email, $google_name);
+            
+            // Log in the new user
+            if ($new_user_id) {
+                $this->perform_google_login($google_email);
+            } else {
+                 echo "<script>alert('Registration failed.');</script>";
+                 redirect('Welcome/login', 'refresh');
+            }
+        }
+
+    } catch (Exception $e) {
+        // Log the error and show a generic message
+        log_message('error', 'Google OAuth Error: ' . $e->getMessage());
+        echo "<script>alert('Google sign-in failed. Please try again.');</script>";
+        redirect('Welcome/login', 'refresh');
+    }
+}
+
+// Existing CodeIgniter Controller...
+
+private function perform_google_login($email)
+{
+    // This logic is adapted from your original login_program()
+    $id2 = $this->Usermodel->getuserid_by_email($email); // **You'll need to create this method**
+    
+    if (!$id2) {
+        echo "<script>alert('Account not found.');</script>";
+        redirect('Welcome/login', 'refresh');
+        return;
+    }
+    
+    $alldetail = $this->Usermodel->getuserdetail($id2);
+
+    $this->session->set_userdata(
+        array(
+            'userid' => $id2,
+            'logined' => (bool) true,
+            'usertype' => $alldetail->usertype,
+            'status' => $alldetail->status
+        )
+    );
+    
+    // Use your existing redirection logic
+    if (isset($_SESSION['logined']) and ($_SESSION['logined'] === true) and ($_SESSION['usertype'] === '0') and ($_SESSION['status'] === '1')) {
+        redirect('Welcome/admin', 'refresh');
+    } else if (isset($_SESSION['logined']) and ($_SESSION['logined'] === true) and ($_SESSION['usertype'] === '1') and ($_SESSION['status'] === '1')) {
+        redirect('Welcome/companyhome', 'refresh');
+    } else if (isset($_SESSION['logined']) and ($_SESSION['logined'] === true) and ($_SESSION['usertype'] === '2') and ($_SESSION['status'] === '1')) {
+        redirect('Welcome/contracthome', 'refresh');
+    } else if (isset($_SESSION['logined']) and ($_SESSION['logined'] === true) and ($_SESSION['usertype'] === '3') and ($_SESSION['status'] === '1')) {
+        redirect('Welcome/user', 'refresh');
+    } else {
+        echo "<script>alert('Waiting for admin approval')</script>";
+        redirect('Welcome/login', 'refresh');
+    }
+}
 	public function news()
 	{
 		if (isset($_SESSION['logined']) && $_SESSION['logined'] === true && $_SESSION['usertype'] === '0') 
@@ -711,8 +849,9 @@ class Welcome extends CI_Controller
 			'loginid' => $loginid,
 			'shipid' => $shipid,
 		);
-
+		// print_r($data);exit;
 		$result = $this->Usermodel->exports($data);
+
 		if ($result) {
 			echo "<script>alert('Ship  export details added sucessfully')</script>";
 			redirect('Welcome/payment/' . $loginid . '/' . $totalamount);
@@ -1266,15 +1405,15 @@ class Welcome extends CI_Controller
 
 	public function jobss()
 	{
-		if (isset($_SESSION['logined']) && $_SESSION['logined'] === true && $_SESSION['usertype'] === '3') 
-		{
+		// if (isset($_SESSION['logined']) && $_SESSION['logined'] === true && $_SESSION['usertype'] === '3') 
+		// {
 		$this->load->view('companyheader');
 		$this->load->view('job');
 		$this->load->view('footer');
-	}
-	else{
-		redirect('Welcome/login', 'refresh');
-	}
+	// }
+	// else{
+	// 	redirect('Welcome/login', 'refresh');
+	// }
 	}
 
 	public function jobdetails()
@@ -1545,99 +1684,99 @@ else{
         }
     }
 
-	public function google_login()
-	{
-		$this->load->helper('url');
-		header('Content-Type: application/json');
+	// public function google_login()
+	// {
+	// 	$this->load->helper('url');
+	// 	header('Content-Type: application/json');
 
-		$input = json_decode(file_get_contents('php://input'), true);
-		$idToken = $input['idToken'] ?? null;
+	// 	$input = json_decode(file_get_contents('php://input'), true);
+	// 	$idToken = $input['idToken'] ?? null;
 
-		if (!$idToken) {
-			echo json_encode(['success' => false, 'message' => 'ID token missing']);
-			return;
-		}
+	// 	if (!$idToken) {
+	// 		echo json_encode(['success' => false, 'message' => 'ID token missing']);
+	// 		return;
+	// 	}
 
-		// For production, you should verify the ID token using Firebase Admin SDK
-		// For now, we'll decode the JWT to get user info (basic implementation)
-		$tokenParts = explode('.', $idToken);
-		if (count($tokenParts) !== 3) {
-			echo json_encode(['success' => false, 'message' => 'Invalid token']);
-			return;
-		}
+	// 	// For production, you should verify the ID token using Firebase Admin SDK
+	// 	// For now, we'll decode the JWT to get user info (basic implementation)
+	// 	$tokenParts = explode('.', $idToken);
+	// 	if (count($tokenParts) !== 3) {
+	// 		echo json_encode(['success' => false, 'message' => 'Invalid token']);
+	// 		return;
+	// 	}
 
-		$payload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $tokenParts[1])), true);
-		if (!$payload) {
-			echo json_encode(['success' => false, 'message' => 'Invalid token payload']);
-			return;
-		}
+	// 	$payload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $tokenParts[1])), true);
+	// 	if (!$payload) {
+	// 		echo json_encode(['success' => false, 'message' => 'Invalid token payload']);
+	// 		return;
+	// 	}
 
-		$email = $payload['email'] ?? null;
-		$name = $payload['name'] ?? null;
-		$googleId = $payload['sub'] ?? null;
+	// 	$email = $payload['email'] ?? null;
+	// 	$name = $payload['name'] ?? null;
+	// 	$googleId = $payload['sub'] ?? null;
 
-		if (!$email) {
-			echo json_encode(['success' => false, 'message' => 'Email not found in token']);
-			return;
-		}
+	// 	if (!$email) {
+	// 		echo json_encode(['success' => false, 'message' => 'Email not found in token']);
+	// 		return;
+	// 	}
 
-		// Check if user exists in database
-		$user = $this->Usermodel->get_user_by_email($email);
+	// 	// Check if user exists in database
+	// 	$user = $this->Usermodel->get_user_by_email($email);
 
-		if ($user) {
-			// User exists, log them in
-			$this->session->set_userdata([
-				'userid' => $user->loginid,
-				'logined' => true,
-				'usertype' => $user->usertype,
-				'status' => $user->status,
-				'google_login' => true
-			]);
+	// 	if ($user) {
+	// 		// User exists, log them in
+	// 		$this->session->set_userdata([
+	// 			'userid' => $user->loginid,
+	// 			'logined' => true,
+	// 			'usertype' => $user->usertype,
+	// 			'status' => $user->status,
+	// 			'google_login' => true
+	// 		]);
 
-			$redirectUrl = $this->get_redirect_url($user->usertype);
-			echo json_encode(['success' => true, 'redirectUrl' => $redirectUrl]);
-		} else {
-			// User doesn't exist, you might want to create them or redirect to registration
-			// For now, we'll create a basic user account
-			$defaultPassword = 'google_' . rand(1000, 9999); // Temporary password
-			$hashedPassword = $this->Usermodel->hash_password($defaultPassword);
+	// 		$redirectUrl = $this->get_redirect_url($user->usertype);
+	// 		echo json_encode(['success' => true, 'redirectUrl' => $redirectUrl]);
+	// 	} else {
+	// 		// User doesn't exist, you might want to create them or redirect to registration
+	// 		// For now, we'll create a basic user account
+	// 		$defaultPassword = 'google_' . rand(1000, 9999); // Temporary password
+	// 		$hashedPassword = $this->Usermodel->hash_password($defaultPassword);
 
-			$userData = [
-				'email' => $email,
-				'password' => $hashedPassword,
-				'usertype' => '3', // Default to public user
-				'status' => '1' // Active
-			];
+	// 		$userData = [
+	// 			'email' => $email,
+	// 			'password' => $hashedPassword,
+	// 			'usertype' => '3', // Default to public user
+	// 			'status' => '1' // Active
+	// 		];
 
-			$loginId = $this->Usermodel->create_google_user($userData, $name);
+	// 		$loginId = $this->Usermodel->create_google_user($userData, $name);
 
-			if ($loginId) {
-				$this->session->set_userdata([
-					'userid' => $loginId,
-					'logined' => true,
-					'usertype' => '3',
-					'status' => '1',
-					'google_login' => true
-				]);
+	// 		if ($loginId) {
+	// 			$this->session->set_userdata([
+	// 				'userid' => $loginId,
+	// 				'logined' => true,
+	// 				'usertype' => '3',
+	// 				'status' => '1',
+	// 				'google_login' => true
+	// 			]);
 
-				$redirectUrl = $this->get_redirect_url('3');
-				echo json_encode(['success' => true, 'redirectUrl' => $redirectUrl]);
-			} else {
-				echo json_encode(['success' => false, 'message' => 'Failed to create user account']);
-			}
-		}
-	}
+	// 			$redirectUrl = $this->get_redirect_url('3');
+	// 			echo json_encode(['success' => true, 'redirectUrl' => $redirectUrl]);
+	// 		} else {
+	// 			echo json_encode(['success' => false, 'message' => 'Failed to create user account']);
+	// 		}
+	// 	}
+	// }
 
-	private function get_redirect_url($usertype)
-	{
-		switch ($usertype) {
-			case '0': return base_url('Welcome/admin');
-			case '1': return base_url('Welcome/companyhome');
-			case '2': return base_url('Welcome/contracthome');
-			case '3': return base_url('Welcome/user');
-			default: return base_url('Welcome/login');
-		}
-	}
+	// private function get_redirect_url($usertype)
+	// {
+	// 	switch ($usertype) {
+	// 		case '0': return base_url('Welcome/admin');
+	// 		case '1': return base_url('Welcome/companyhome');
+	// 		case '2': return base_url('Welcome/contracthome');
+	// 		case '3': return base_url('Welcome/user');
+	// 		default: return base_url('Welcome/login');
+	// 	}
+	// }
 
 	
 

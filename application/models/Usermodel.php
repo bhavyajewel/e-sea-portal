@@ -591,5 +591,33 @@ class Usermodel extends CI_Model
       $query = $this->db->get();
       return $query->result();
    }
+   public function check_google_user($email)
+{
+    // Use CodeIgniter's query builder for security and clarity
+    $this->db->where('email', $email);
+    $query = $this->db->get('users'); // Replace 'users' with your actual table name
+    
+    // Check if any row was found
+    if ($query->num_rows() > 0) {
+        return TRUE;
+    }
+    return FALSE;
+}
+public function getuserid_by_email($email)
+{
+    // Select only the 'id' column for efficiency
+    $this->db->select('id');
+    $this->db->where('email', $email);
+    $query = $this->db->get('login'); // Replace 'users' with your actual table name
+
+    if ($query->num_rows() > 0) {
+        // Return the 'id' column from the single result row
+        $row = $query->row(); // Get the single result row as an object
+        return $row->id;
+    }
+    
+    // Return false if no user was found with that email
+    return FALSE;
+}
 }
 ?>

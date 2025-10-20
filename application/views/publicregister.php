@@ -1,118 +1,128 @@
-<html ng-app="myApp">
-
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
 <head>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Registration</title>
+  <link rel="stylesheet" href="<?php echo base_url(); ?>user/css/bootstrap.css" />
+  <link rel="stylesheet" href="<?php echo base_url(); ?>user/css/fontawesome-all.css" />
+  <style>
+    :root { --primary:#0d6efd; --ink:#0b1d36; --muted:#6b7280; --bg:#f7f9fc; }
+    body { background:var(--bg); color:#17202a; }
+    .page { min-height: 100vh; display:flex; align-items:center; justify-content:center; padding: 32px 12px; background: linear-gradient(120deg, rgba(6,36,67,.75), rgba(13,110,253,.45)), url('<?php echo base_url(); ?>user/images/ship2.jpg') center center / cover no-repeat; }
+    .card { position:relative; border:1px solid #e6ebf1; border-radius:20px; box-shadow: 0 24px 60px rgba(6,36,67,.18); background: rgba(255,255,255,.92); backdrop-filter: blur(12px); }
+    .card-accent { position:absolute; top:0; left:0; right:0; height:6px; border-top-left-radius:20px; border-top-right-radius:20px; background: linear-gradient(90deg,#0d6efd,#6610f2); }
+    .styled-card { padding: 28px 24px; }
+    .brand { color:var(--ink); font-weight:700; }
+    label { font-weight:600; color:#334155; }
+    .help { font-size:.85rem; color:#dc3545; }
+    body.dark { background:#0b1220; color:#e5e7eb; }
+    body.dark .page { background: linear-gradient(120deg, rgba(6,36,67,.85), rgba(13,110,253,.55)), url('<?php echo base_url(); ?>user/images/ship2.jpg') center center / cover no-repeat; }
+    body.dark .card { background:rgba(15,23,42,.78); border-color:#0b1220; box-shadow: 0 18px 48px rgba(0,0,0,.35); }
+    body.dark label { color:#e5e7eb; }
+    .theme-toggle { position: fixed; top:16px; right:16px; z-index:1000; }
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+  <script>
+    var app = angular.module("myApp", []);
+    app.controller('cntrl', function ($scope) { })
+  </script>
 </head>
-
 <body>
-	<div ng-controller="cntrl" class="container" style="margin-left: 200px;">
-		<br><br>
-		<form action="<?php echo base_url(); ?>index.php/Welcome/publicregister" method="post">
-			<!-- <table align="center"> -->
-				<div class="row">
-					<div class="col-sm-3" style="margin-left: 150px;">Name:</div>
-					<div class="col-sm-3" style="margin-left: -150px;"><input type="text" name="name" maxlength="60"
-							ng-pattern="/^[a-zA-Z. ]*[a-zA-Z]{1,60}$/" ng-model="name" style="width: 400px;" required
-							class="form form-control mb-2" placeholder="Enter Full Name" />
-					</div>
-					<div class="col-sm-3" style="margin-left: 400px;"><span style="color:red"
-							ng-show="SaveForm.name.$dirty && SaveForm.name.$invalid" class="ng-hide">
-							Please Enter Valid Name.! </span></div>
-				</div>
-				<div class="row">
-					<div class="col-sm-3" style="margin-left: 150px;">Address:</div>
-					<div class="col-sm-3" style="margin-left: -150px;">
-						<textarea class="form-control" name="address" class="form-control"
-							style="width:400px"></textarea>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-sm-3" style="margin-left: 150px;">Pincode:</div>
-					<div class="col-sm-3" style="margin-left: -150px;"> <input type="text" name="pincode"
-							style="width: 400px;" required class="form form-control mb-2">
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-sm-3" style="margin-left: 150px;">District:</div>
-					<div class="col-sm-3" style="margin-left: -150px;">
-						<select name="district" class="form-control" style="width: 400px;">
-							<option>Selelct</option>
-							<option>Thiruvananthapuram</option>
-							<option>Kollam</option>
-							<option>Pathanamthitta</option>
-							<option>Alappuzha</option>
-							<option>Kottayam</option>
-							<option>Idukki</option>
-							<option>Ernakulam</option>
-							<option>Trissufr</option>
-							<option>Palakad</option>
-							<option>Malapuram</option>
-							<option>Kozhikode</option>
-							<option>Wayanad</option>
-							<option>Kannur</option>
-							<option>Kasargode</option>
-						</select>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-sm-3" style="margin-left: 150px;">City:</div>
-					<div class="col-sm-3" style="margin-left: -150px;">
-						<textarea class="form-control" name="city" class="form-control"></textarea>
-					</div>
-				</div>
-	<div class="row">
-		<div class="col-sm-3" style="margin-left: 150px;">Gender:</div>
-		<div class="col-sm-4" style="margin-left: -150px;">
-			<section id="pattern1">
-				<label style="--icon:'🤵🏻‍♂';--color:lightblue"><input type="radio" name="gender" value="male"
-						required>&nbsp;Male &nbsp;</label>
-				<label style="--icon:'🤵🏻‍♀';--color:pink"><input type="radio" name="gender" value="female"
-						required>&nbsp;Female &nbsp;</label>
-				<label style="--icon:'🏳‍🌈';--color:white"><input type="radio" name="gender" value="other"
-						required>&nbsp;Other </label>
-			</section>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-sm-3" style="margin-left: 150px;">Contact Number:</div>
-		<div class="col-sm-3" style="margin-left: -150px;"><input type="text" ng-pattern="/^[6-9][0-9]{9}$/"
-				ng-model="contact_number" name="contact" style="width: 400px;" required
-				class="form form-control mb-2" />
-		</div>
-		<div class="col-sm-3" style="margin-left: 400px;"><span style="color:red"
-				ng-show="SaveForm.contact_number.$dirty && SaveForm.contact_number.$invalid" class="ng-hide">
-				Please Enter Valid Mobile No.! </span></div>
-	</div>
-	<div class="row">
-		<div class="col-sm-3" style="margin-left: 150px;">Email: </div>
-		<div class="col-sm-3" style="margin-left: -150px;"><input type="email" required
-				ng-pattern="/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,30}$/" name="email" style="width: 400px;"
-				class="form form-control mb-2" ng-model="email" />
-		</div>
-		<div class="col-sm-3" style="margin-left: 400px;"> <span style="color:red"
-				ng-show="SaveForm.email.$dirty && SaveForm.email.$invalid" class="ng-hide">
-				Please Enter Valid Email.!</span></div>
-	</div>
-	<div class="row">
-		<div class="col-sm-3" style="margin-left: 150px;">Password: </div>
-		<div class="col-sm-3" style="margin-left: -150px;"><input type="password" name="password" style="width: 400px;"
-				required class="form form-control mb-2">
-			<input type="submit" ng-disabled="SaveForm.$invalid" value="Register" class="btn btn-primary">
-		</div>
-	</div>
-
-	</div>
-
-	<!-- </table> -->
-	</form>
-	<br><br>
-	<script>
-		var app = angular.module("myApp", []);
-		app.controller('cntrl', function ($scope) { })
-	</script>
-
+  <button id="themeToggle" class="btn btn-sm btn-outline-secondary theme-toggle" type="button"><i class="fas fa-moon"></i></button>
+  <div class="page" ng-controller="cntrl">
+    <div class="container" style="max-width: 820px;">
+      <div class="card styled-card p-md-5">
+        <div class="card-accent"></div>
+        <div class="mb-4">
+          <h3 class="brand mb-1"><i class="fas fa-user mr-2"></i>User Registration</h3>
+          <p class="text-muted mb-0">Create your personal account to track shipments.</p>
+        </div>
+        <form name="SaveForm" action="<?php echo base_url(); ?>index.php/Welcome/publicregister" method="post" novalidate>
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input id="name" type="text" name="name" maxlength="60" ng-pattern="/^[a-zA-Z. ]*[a-zA-Z]{1,60}$/" ng-model="name" class="form-control" placeholder="Enter full name" required />
+            <div class="help" ng-show="SaveForm.name.$dirty && SaveForm.name.$invalid">Please enter a valid name.</div>
+          </div>
+          <div class="form-group">
+            <label for="address">Address</label>
+            <textarea id="address" class="form-control" name="address" rows="3" placeholder="Address"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="pincode">Pincode</label>
+              <input id="pincode" type="text" name="pincode" class="form-control" placeholder="Pincode" required>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="district">District</label>
+              <select id="district" name="district" class="form-control">
+                <option>Selelct</option>
+                <option>Thiruvananthapuram</option>
+                <option>Kollam</option>
+                <option>Pathanamthitta</option>
+                <option>Alappuzha</option>
+                <option>Kottayam</option>
+                <option>Idukki</option>
+                <option>Ernakulam</option>
+                <option>Trissufr</option>
+                <option>Palakad</option>
+                <option>Malapuram</option>
+                <option>Kozhikode</option>
+                <option>Wayanad</option>
+                <option>Kannur</option>
+                <option>Kasargode</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="city">City</label>
+              <textarea id="city" class="form-control" name="city" rows="1" placeholder="City"></textarea>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Gender</label>
+              <div class="d-flex align-items-center" style="gap:16px;">
+                <label class="mb-0"><input type="radio" name="gender" value="male" required> Male</label>
+                <label class="mb-0"><input type="radio" name="gender" value="female" required> Female</label>
+                <label class="mb-0"><input type="radio" name="gender" value="other" required> Other</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="contact">Contact Number</label>
+              <input id="contact" type="text" ng-pattern="/^[6-9][0-9]{9}$/" ng-model="contact_number" name="contact" class="form-control" placeholder="10-digit mobile" required>
+              <div class="help" ng-show="SaveForm.contact_number.$dirty && SaveForm.contact_number.$invalid">Please enter a valid mobile number.</div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="email">Email</label>
+              <input id="email" type="email" required ng-pattern="/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,30}$/" name="email" class="form-control" ng-model="email" placeholder="you@example.com" />
+              <div class="help" ng-show="SaveForm.email.$dirty && SaveForm.email.$invalid">Please enter a valid email.</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" class="form-control" placeholder="Create a password" required>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary" ng-disabled="SaveForm.$invalid">Register</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var toggle = document.getElementById('themeToggle');
+      try { var saved = localStorage.getItem('theme'); if(saved==='dark'){ document.body.classList.add('dark'); if(toggle) toggle.innerHTML = '<i class="fas fa-sun"></i>'; } } catch(e) {}
+      if(toggle){
+        toggle.addEventListener('click', function(){
+          var isDark = document.body.classList.toggle('dark');
+          this.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+          try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch(e) {}
+        });
+      }
+    })();
+  </script>
+</body>
 </html>
-
-
-
-<!-- </div> -->

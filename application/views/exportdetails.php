@@ -1,7 +1,7 @@
 <!-- <h2>EXPORT DETAILS FORM</h2> -->
-<form action="<?php echo base_url();?>Welcome/exports" method="post">
+<form action="<?php echo base_url();?>Welcome/shipexportprocess" method="post">
 	<table align="center">
-	<input type="hidden" name="hide" value="">
+	<input type="hidden" name="hide" value="<?php echo $shipid; ?>">
     <tr><td>Product Category</td><td><input type="text" name="productcategory" class="form-control"></td></tr>
     <tr><td>Product Name</td><td><input type="text" name="productname" class="form-control"></td></tr>
     <tr><td>Product Quantity</td><td><input type="text" name="productquantity" class="form-control"></td></tr>
