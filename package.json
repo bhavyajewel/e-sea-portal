@@ -1,0 +1,23 @@
+{
+  "name": "seaport",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhavyajewel/e-sea-portal.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bhavyajewel/e-sea-portal/issues"
+  },
+  "homepage": "https://github.com/bhavyajewel/e-sea-portal#readme",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
+  }
+}
