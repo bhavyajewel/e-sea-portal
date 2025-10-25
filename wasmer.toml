@@ -1,0 +1,7 @@
+[build]
+dockerfile = "Dockerfile"
+context = "."
+tag = "seaport"
+
+[deploy]
+platform = "linux/amd64"

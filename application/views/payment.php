@@ -1,296 +1,1076 @@
-<!--
-	Author: W3layouts
-	Author URL: http://w3layouts.com
-	License: Creative Commons Attribution 3.0 Unported
-	License URL: http://creativecommons.org/licenses/by/3.0/
--->
-
 <!DOCTYPE html>
-<html lang="zxx">
-
+<html lang="en">
 <head>
-    <title>Payment Tab Widget Flat Responsive Widget Template :: w3layouts</title>
-    <!-- Meta-Tags -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta charset="utf-8">
-    <meta name="keywords" content="Payment Tab Widget a Responsive Web Template, Bootstrap Web Templates, Flat Web Templates, Android Compatible Web Template, Smartphone Compatible Web Template, Free Webdesigns for Nokia, Samsung, LG, Sony Ericsson, Motorola Web Design">
-    <script>
-        addEventListener("load", function () {
-            setTimeout(hideURLbar, 0);
-        }, false);
-
-        function hideURLbar() {
-            window.scrollTo(0, 1);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment | Sea Port Portal</title>
+    <link rel="icon" type="image/png" href="<?php echo base_url(); ?>assets/images/anchor-icon.png">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --primary-dark: #0d3b5a;
+            --secondary: #28a0a0;
+            --accent: #ff7e5f;
+            --success: #4bb543;
+            --danger: #f44336;
+            --light: #f0f8ff;
+            --dark: #0a2e36;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 8px;
+            --box-shadow: 0 5px 15px rgba(10, 46, 54, 0.1);
+            --transition: all 0.3s ease;
+            --wave-pattern: url("data:image/svg+xml,%3Csvg width='100' height='20' viewBox='0 0 100 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10C20 0 40 20 60 10S100 20 100 10L100 20L0 20Z' fill='%231a5f7a' fill-opacity='0.05'/%3E%3C/svg%3E");
         }
-    </script>
-    <!-- //Meta-Tags -->
-    <!-- Index-Page-CSS -->
-    <link rel="stylesheet" href="<?php echo base_url();?>payment/css/style.css" type="text/css" media="all">
-    <!-- easy-responsive-tabs css -->
-    <link rel="stylesheet" href="<?php echo base_url();?>payment/css/easy-responsive-tabs.css" type="text/css" media="all" />
-    <link href="/<?php echo base_url();?>payment/fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i" rel="stylesheet">
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: var(--wave-pattern);
+            background-size: 100% 200px;
+            background-repeat: repeat-x;
+            opacity: 0.3;
+            z-index: -1;
+            animation: wave 20s linear infinite;
+        }
+
+        @keyframes wave {
+            0% { background-position: 0 0; }
+            100% { background-position: 100% 0; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .payment-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 2rem auto;
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-header h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .payment-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        .payment-header p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .payment-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .payment-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--light-gray);
+            background: white;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1.2rem;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            outline: none;
+        }
+
+        .tab-btn i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+            vertical-align: middle;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+            outline: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            box-shadow: 0 4px 15px rgba(26, 95, 122, 0.2);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--accent);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .payment-method {
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 1.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-method::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method:hover::before {
+            background: var(--accent);
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .payment-method.active {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .payment-method i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .payment-method span {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .order-summary h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .summary-item.total {
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #ddd;
+            margin-top: 0.75rem;
+        }
+
+        .secure-payment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1.5rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            background: rgba(26, 95, 122, 0.05);
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            border: 1px dashed rgba(26, 95, 122, 0.2);
+        }
+
+        .secure-payment i {
+            color: var(--success);
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .payment-tabs {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                padding: 1rem 0.5rem;
+                font-size: 0.85rem;
+            }
+            
+            .tab-btn i {
+                display: block;
+                margin: 0 auto 0.3rem;
+                font-size: 1.5rem;
+            }
+            
+            .payment-methods {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Custom checkbox */
+        .custom-checkbox {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            cursor: pointer;
+        }
+
+        .custom-checkbox input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: relative;
+            height: 20px;
+            width: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+            transition: var(--transition);
+        }
+
+        .custom-checkbox input:checked ~ .checkmark {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 7px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .custom-checkbox input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        /* Card preview */
+        .card-preview {
+            background: linear-gradient(135deg, #1a5f7a, #0d3b5a);
+            color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(10, 46, 54, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-preview:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(10, 46, 54, 0.2);
+        }
+
+        .card-preview::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            z-index: 0;
+            transition: all 0.5s ease;
+        }
+
+        .card-preview:hover::before {
+            transform: scale(1.5);
+            opacity: 0.2;
+        }
+
+        .card-type {
+            text-align: right;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            margin: 1.5rem 0;
+            word-spacing: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-name {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-expiry {
+            text-align: right;
+        }
+    </style>
 </head>
 
 <body>
-    <h1 class="title-agile text-center">Payment Tab Widget</h1>
-    <div class="w3ls-main">
-        <!--/tabs-->
-        <div class="responsive_tabs w3ls_tab">
-            <div id="horizontalTab">
-                <ul class="resp-tabs-list">
-                    <li>Credit/Debit</li>
-                    <li>Net Banking</li>
-                    <li>Paypal Account</li>
-                </ul>
-                <div class="resp-tabs-container">
-                    <!--tab_one-->
-                    <div class="tab1">
-                        <div class="agile_pay">
-                            <form action="<?php echo base_url();?>Welcome/insertpayment" method="post" class="creditly-card-form shopf-sear-headinfo_form">
-                            <input type="hidden" name="loginid" value="<?php echo $loginid;?>">
-                            <input type="hidden" name="amount" value="<?php echo $amount;?>">
-                                <section class="creditly-wrapper payf_wrapper">
-                                    <div class="credit-card-wrapper">
-                                        <div class="first-row form-group">
-                                            <div class="controls">
-                                                <label class="control-label">Name on Card</label>
-                                                <input class="billing-address-name form-control" type="text" name="noc" placeholder="John Smith">
-                                            </div>
-                                            <div class="paymntf_card_number_grids">
-                                                <div class="fpay_card_number_grid_left">
-                                                    <div class="controls">
-                                                        <label class="control-label">Card Number</label>
-                                                        <input class="number credit-card-number form-control" type="text" name="cardno" inputmode="numeric" autocomplete="cc-number"
-                                                            autocompletetype="cc-number" x-autocompletetype="cc-number" placeholder="&#149;&#149;&#149;&#149; &#149;&#149;&#149;&#149; &#149;&#149;&#149;&#149; &#149;&#149;&#149;&#149;">
-                                                    </div>
-                                                </div>
-                                                <div class="fpay_card_number_grid_right">
-                                                    <div class="controls">
-                                                        <label class="control-label">CVV</label>
-                                                        <input class="security-code form-control" Â· inputmode="numeric" type="text" name="cvv" placeholder="&#149;&#149;&#149;">
-                                                    </div>
-                                                </div>
-                                                <div class="clear"> </div>
-                                            </div>
-                                            <div class="controls">
-                                                <label class="control-label">Expiration Date</label>
-                                                <input class="expiration-month-and-year form-control" type="text" name="expiredate" placeholder="MM / YY">
-                                            </div>
-                                        </div>
-                                        <!-- <button class="submit">
-                                            <span>Make payment </span>
-                                        </button> -->
-                                        <input type="submit" value="Make Payment" class="btn btn-success">
-                                    </div>
-                                </section>
-                            </form>
+    <div class="container">
+        <div class="payment-container">
+            <div class="payment-header">
+                <h1><i class="fas fa-anchor" style="margin-right: 10px; color: var(--accent);"></i> Secure Payment</h1>
+                <p>Complete your payment securely with our 256-bit SSL encryption</p>
+                <div class="secure-payment" style="margin-top: 1rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+                    <i class="fas fa-shield-alt" style="color: var(--success); margin-right: 8px;"></i>
+                    <span>Your transaction is protected with bank-level security</span>
+                </div>
+            </div>
 
-                        </div>
-                    </div>
-                    <!-- //tab one -->
-                    <!-- tab two -->
-                    <div class="tab2">
-                        <div class="agile_pay">
-                            <div class="vertical_post">
-                                <form action="#" method="post">
-                                    <h2>Select From Popular Banks</h2>
-                                    <div class="swit-radio">
-                                        <div class="check_box_one">
-                                            <div class="radio_one">
-                                                <label>
-                                                    <input type="radio" name="radio" checked="">
-                                                    <i></i>Syndicate Bank</label>
-                                            </div>
-                                        </div>
-                                        <div class="check_box_one">
-                                            <div class="radio_one">
-                                                <label>
-                                                    <input type="radio" name="radio">
-                                                    <i></i>Bank of Baroda</label>
-                                            </div>
-                                        </div>
-                                        <div class="check_box_one">
-                                            <div class="radio_one">
-                                                <label>
-                                                    <input type="radio" name="radio">
-                                                    <i></i>Canara Bank</label>
-                                            </div>
-                                        </div>
-                                        <div class="check_box_one">
-                                            <div class="radio_one">
-                                                <label>
-                                                    <input type="radio" name="radio">
-                                                    <i></i>ICICI Bank</label>
-                                            </div>
-                                        </div>
-                                        <div class="check_box_one">
-                                            <div class="radio_one">
-                                                <label>
-                                                    <input type="radio" name="radio">
-                                                    <i></i>State Bank Of India</label>
-                                            </div>
-                                        </div>
-                                        <div class="clearfix"></div>
-                                    </div>
-                                    <h3> select other bank</h3>
-                                    <div class="section_room_pay">
-                                        <select class="year">
-                                            <option value="">=== Other Banks ===</option>
-                                            <option value="ALB-NA">Allahabad Bank NetBanking</option>
-                                            <option value="ADB-NA">Andhra Bank</option>
-                                            <option value="BBK-NA">Bank of Bahrain and Kuwait NetBanking</option>
-                                            <option value="BBC-NA">Bank of Baroda Corporate NetBanking</option>
-                                            <option value="BBR-NA">Bank of Baroda Retail NetBanking</option>
-                                            <option value="BOI-NA">Bank of India NetBanking</option>
-                                            <option value="BOM-NA">Bank of Maharashtra NetBanking</option>
-                                            <option value="CSB-NA">Catholic Syrian Bank NetBanking</option>
-                                            <option value="CBI-NA">Central Bank of India</option>
-                                            <option value="CUB-NA">City Union Bank NetBanking</option>
-                                            <option value="CRP-NA">Corporation Bank</option>
-                                            <option value="DBK-NA">Deutsche Bank NetBanking</option>
-                                            <option value="DCB-NA">Development Credit Bank</option>
-                                            <option value="DC2-NA">Development Credit Bank - Corporate</option>
-                                            <option value="DLB-NA">Dhanlaxmi Bank NetBanking</option>
-                                            <option value="FBK-NA">Federal Bank NetBanking</option>
-                                            <option value="IDS-NA">Indusind Bank NetBanking</option>
-                                            <option value="IOB-NA">Indian Overseas Bank</option>
-                                            <option value="ING-NA">ING Vysya Bank (now Kotak)</option>
-                                            <option value="JKB-NA">Jammu and Kashmir NetBanking</option>
-                                            <option value="JSB-NA">Janata Sahakari Bank Limited</option>
-                                            <option value="KBL-NA">Karnataka Bank NetBanking</option>
-                                            <option value="KVB-NA">Karur Vysya Bank NetBanking</option>
-                                            <option value="LVR-NA">Lakshmi Vilas Bank NetBanking</option>
-                                            <option value="OBC-NA">Oriental Bank of Commerce NetBanking</option>
-                                            <option value="CPN-NA">PNB Corporate NetBanking</option>
-                                            <option value="PNB-NA">PNB NetBanking</option>
-                                            <option value="RSD-DIRECT">Rajasthan State Co-operative Bank-Debit Card</option>
-                                            <option value="RBS-NA">RBS (The Royal Bank of Scotland)</option>
-                                            <option value="SWB-NA">Saraswat Bank NetBanking</option>
-                                            <option value="SBJ-NA">SB Bikaner and Jaipur NetBanking</option>
-                                            <option value="SBH-NA">SB Hyderabad NetBanking</option>
-                                            <option value="SBM-NA">SB Mysore NetBanking</option>
-                                            <option value="SBT-NA">SB Travancore NetBanking</option>
-                                            <option value="SVC-NA">Shamrao Vitthal Co-operative Bank</option>
-                                            <option value="SIB-NA">South Indian Bank NetBanking</option>
-                                            <option value="SBP-NA">State Bank of Patiala NetBanking</option>
-                                            <option value="SYD-NA">Syndicate Bank NetBanking</option>
-                                            <option value="TNC-NA">Tamil Nadu State Co-operative Bank NetBanking</option>
-                                            <option value="UCO-NA">UCO Bank NetBanking</option>
-                                            <option value="UBI-NA">Union Bank NetBanking</option>
-                                            <option value="UNI-NA">United Bank of India NetBanking</option>
-                                            <option value="VJB-NA">Vijaya Bank NetBanking</option>
-                                        </select>
-                                    </div>
-                                    <input type="submit" value="Pay now">
-                                </form>
+            <div class="payment-card">
+                <!-- Payment Tabs -->
+                <div class="payment-tabs">
+                    <button class="tab-btn active" data-tab="credit-card">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Card</span>
+                    </button>
+                    <button class="tab-btn" data-tab="net-banking">
+                        <i class="fas fa-university"></i>
+                        <span>Net Banking</span>
+                    </button>
+                    <button class="tab-btn" data-tab="paypal">
+                        <i class="fab fa-cc-paypal"></i>
+                        <span>PayPal</span>
+                    </button>
+                </div>
+
+                <!-- Credit Card Tab -->
+                <div class="tab-content active" id="credit-card">
+                    <form action="<?php echo base_url();?>Welcome/insertpayment" method="post" id="payment-form" onsubmit="return validatePaymentForm()">
+                        <input type="hidden" name="loginid" value="<?php echo $loginid;?>">
+                        <input type="hidden" name="card_type" id="card-type-input" value="">
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="payment-amount">Payment Amount (₹) <span class="text-danger">*</span></label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-rupee-sign"></i>
+                                <input type="number" class="form-control" id="payment-amount" name="amount" 
+                                       value="<?php echo is_numeric($amount) ? number_format($amount, 2, '.', '') : '0.00'; ?>" 
+                                       min="1" step="0.01" required 
+                                       oninput="formatAmount(this)">
                             </div>
                         </div>
-                    </div>
-                    <!-- //tab two -->
-                    <!-- tab three -->
-                    <div class="tab3">
-                        <div class="agile_pay">
-                            <div class=" tab-grid">
-                                <p>Important: You will be redirected to PayPal's website to securely complete your payment.</p>
-                                <a href="#" class="btn btn-primary">Checkout via Paypal</a>
+                        
+                        <!-- Card Preview -->
+                        <div class="card-preview">
+                            <div class="card-type">
+                                <i class="fab fa-cc-visa fa-2x"></i>
                             </div>
-                            <div class="paypal_agile">
-                                <form action="#" method="post" class="creditly-card-form shopf-sear-headinfo_form">
-                                    <section class="creditly-wrapper payf_wrapper">
-                                        <div class="credit-card-wrapper">
-                                            <div class="first-row form-group">
-                                                <div class="controls">
-                                                    <label class="control-label">Card Holder </label>
-                                                    <input class="billing-address-name form-control" type="text" name="name" placeholder="John Smith">
-                                                </div>
-                                                <div class="paymntf_card_number_grids">
-                                                    <div class="fpay_card_number_grid_left">
-                                                        <div class="controls">
-                                                            <label class="control-label">Card Number</label>
-                                                            <input class="number credit-card-number form-control" type="text" name="number" inputmode="numeric" autocomplete="cc-number"
-                                                                autocompletetype="cc-number" x-autocompletetype="cc-number" placeholder="&#149;&#149;&#149;&#149; &#149;&#149;&#149;&#149; &#149;&#149;&#149;&#149; &#149;&#149;&#149;&#149;">
-                                                        </div>
-                                                    </div>
-                                                    <div class="fpay_card_number_grid_right">
-                                                        <div class="controls">
-                                                            <label class="control-label">CVV</label>
-                                                            <input class="security-code form-control" Â· inputmode="numeric" type="text" name="security-code" placeholder="&#149;&#149;&#149;">
-                                                        </div>
-                                                    </div>
-                                                    <div class="clear"> </div>
-                                                </div>
-                                                <div class="controls">
-                                                    <label class="control-label">Valid Thru</label>
-                                                    <input class="expiration-month-and-year form-control" type="text" name="expiration-month-and-year" placeholder="MM / YY">
-                                                </div>
-                                            </div>
-                                            <input class="btn btn-primary submit" type="submit" value="Proceed Payment">
-                                        </div>
-                                    </section>
-                                </form>
+                            <div class="card-number" id="card-number-preview">•••• •••• •••• ••••</div>
+                            <div class="card-details">
+                                <div class="card-name" id="card-name-preview">YOUR NAME</div>
+                                <div class="card-expiry" id="card-expiry-preview">MM/YY</div>
                             </div>
-                            <div class="clearfix"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="card-holder">Cardholder Name <span class="text-danger">*</span></label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" class="form-control" id="card-holder" name="noc" placeholder="John Smith" required 
+                                       pattern="[A-Za-z\s]{3,}" title="Please enter a valid name">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="card-number">Card Number <span class="text-danger">*</span></label>
+                            <div class="input-with-icon">
+                                <i class="far fa-credit-card"></i>
+                                <input type="text" class="form-control" id="card-number" name="cardno" 
+                                       inputmode="numeric" autocomplete="cc-number" 
+                                       placeholder="1234 5678 9012 3456" maxlength="19" required>
+                            </div>
+                            <div class="card-icons" style="margin-top: 10px; display: flex; gap: 10px;">
+                                <i class="fab fa-cc-visa card-type-icon" data-type="visa" style="font-size: 1.8rem; color: #1a1f71; opacity: 0.3; transition: all 0.3s ease;"></i>
+                                <i class="fab fa-cc-mastercard card-type-icon" data-type="mastercard" style="font-size: 1.8rem; color: #eb001b; opacity: 0.3; transition: all 0.3s ease;"></i>
+                                <i class="fab fa-cc-amex card-type-icon" data-type="amex" style="font-size: 1.8rem; color: #006fcf; opacity: 0.3; transition: all 0.3s ease;"></i>
+                                <i class="fab fa-cc-discover card-type-icon" data-type="discover" style="font-size: 1.8rem; color: #ff6600; opacity: 0.3; transition: all 0.3s ease;"></i>
+                            </div>
+                            <small class="text-muted" id="card-type-text"></small>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label class="form-label" for="expiry-date">Expiry Date <span class="text-danger">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="far fa-calendar-alt"></i>
+                                    <input type="text" class="form-control" id="expiry-date" name="expiredate" 
+                                           placeholder="MM/YY" pattern="(0[1-9]|1[0-2])\s*/\s*([0-9]{2})" 
+                                           title="Please enter a valid expiry date (MM/YY)" required>
+                                </div>
+                                <small class="text-muted">MM/YY format</small>
+                            </div>
+                            <div class="form-col">
+                                <label class="form-label" for="cvv">CVV <span class="text-danger">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-lock"></i>
+                                    <input type="password" class="form-control" id="cvv" name="cvv" 
+                                           inputmode="numeric" pattern="[0-9]{3,4}" placeholder="•••" 
+                                           title="3 or 4 digit security code" required>
+                                    <i class="fas fa-question-circle cvv-tooltip" 
+                                       title="3 or 4 digit code on the back of your card"></i>
+                                </div>
+                                <small class="text-muted">3 or 4 digits</small>
+                            </div>
+                        </div>
+
+                        <!-- <div class="custom-checkbox">
+                            <input type="checkbox" id="save-card" name="save_card">
+                            <span class="checkmark"></span>
+                            <label for="save-card">Save this card for future payments</label>
+                        </div> -->
+
+                        <!-- <div class="form-group" style="margin-top: 2rem;">
+                            <div class="order-summary">
+                                <div class="summary-item">
+                                    <span>Amount to pay:</span>
+                                    <span id="amount-display" class="text-primary" style="font-weight: 600; font-size: 1.2rem;">
+                                        ₹<?php echo number_format(is_numeric($amount) ? $amount : 0.00, 2); ?>
+                                    </span>
+                                </div>
+                                <div class="summary-item" style="font-size: 0.85rem; color: var(--gray);">
+                                    <span>Service fee:</span>
+                                    <span>₹0.00</span>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <button type="submit" class="btn" style="margin-top: 1.5rem;">
+                            <i class="fas fa-lock"></i> Pay Securely ₹<?php echo number_format($amount, 2); ?>
+                        </button>
+                        
+                        <!-- <div class="secure-payment">
+                            <i class="fas fa-lock" style="color: var(--success);"></i>
+                            <span>Secure 256-bit SSL encryption</span>
+                        </div>
+
+                        <div class="secure-payment">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Secure 256-bit SSL encryption</span>
+                        </div> -->
+                    </form>
+                </div>
+
+                <!-- Net Banking Tab -->
+                <div class="tab-content" id="net-banking">
+                    <h3>Select Your Bank</h3>
+                    <p>You will be redirected to your bank's secure payment page</p>
+                    
+                    <div class="payment-methods">
+                        <div class="payment-method">
+                            <i class="fas fa-university"></i>
+                            <span>SBI</span>
+                        </div>
+                        <div class="payment-method">
+                            <i class="fas fa-university"></i>
+                            <span>HDFC</span>
+                        </div>
+                        <div class="payment-method">
+                            <i class="fas fa-university"></i>
+                            <span>ICICI</span>
+                        </div>
+                        <div class="payment-method">
+                            <i class="fas fa-university"></i>
+                            <span>Axis</span>
+                        </div>
+                        <div class="payment-method">
+                            <i class="fas fa-university"></i>
+                            <span>Kotak</span>
+                        </div>
+                        <div class="payment-method">
+                            <i class="fas fa-university"></i>
+                            <span>Other</span>
                         </div>
                     </div>
-                    <!-- //tab three -->
+
+                    <div class="form-group">
+                        <label class="form-label">Select Bank</label>
+                        <select class="form-control">
+                            <option value="">-- Select Bank --</option>
+                            <option value="SBI">State Bank of India</option>
+                            <option value="HDFC">HDFC Bank</option>
+                            <option value="ICICI">ICICI Bank</option>
+                            <option value="AXIS">Axis Bank</option>
+                            <option value="KOTAK">Kotak Mahindra Bank</option>
+                            <option value="OTHER">Other Banks</option>
+                        </select>
+                    </div>
+
+                    <button type="button" class="btn">Proceed to Net Banking</button>
+
+                    <div class="secure-payment">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure 256-bit SSL encryption</span>
+                    </div>
+                </div>
+
+                <!-- PayPal Tab -->
+                <div class="tab-content" id="paypal">
+                    <div style="text-align: center; padding: 2rem 0;">
+                        <i class="fab fa-cc-paypal" style="font-size: 4rem; color: #003087; margin-bottom: 1rem;"></i>
+                        <h3>Pay with PayPal</h3>
+                        <p>You will be redirected to PayPal to complete your purchase securely.</p>
+                        
+                        <div style="max-width: 300px; margin: 2rem auto;">
+                            <div class="order-summary">
+                                <h3>Order Summary</h3>
+                                <div class="summary-item">
+                                    <span>Amount:</span>
+                                    <span>₹<?php echo number_format($amount, 2); ?></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Fee:</span>
+                                    <span>₹0.00</span>
+                                </div>
+                                <div class="summary-item total">
+                                    <span>Total:</span>
+                                    <span>₹<?php echo number_format($amount, 2); ?></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn" style="background: #003087; max-width: 300px; margin: 0 auto;">
+                            <i class="fab fa-paypal"></i> Checkout with PayPal
+                        </button>
+                        
+                        <div class="secure-payment">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Secure payment powered by PayPal</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <!--//tabs-->
     </div>
-    <!-- //payment -->
-    <!-- Common js -->
-    <script type="text/javascript" src="<?php echo base_url();?>payment/js/jquery-2.2.3.min.js"></script>
-    <!--// Common js -->
-    <!-- easy-responsive-tabs -->
-    <script src="<?php echo base_url();?>payment/js/easy-responsive-tabs.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#horizontalTab').easyResponsiveTabs({
-                type: 'default', //Types: default, vertical, accordion           
-                width: 'auto', //auto or any width like 600px
-                fit: true, // 100% fit in a container
-                closed: 'accordion', // Start closed if in accordion view
-                activate: function (event) { // Callback function if tab is switched
-                    var $tab = $(this);
-                    var $info = $('#tabInfo');
-                    var $name = $('span', $info);
-                    $name.text($tab.text());
-                    $info.show();
-                }
-            });
-        });
-    </script>
-    <!-- //easy-responsive-tabs -->
-    <!-- credit-card -->
-    <script src="<?php echo base_url();?>payment/js/creditly.js"></script>
-    <link rel="stylesheet" href="<?php echo base_url();?>payment/css/creditly.css" type="text/css" media="all" />
-    <script>
-        $(function () {
-            var creditly = Creditly.initialize(
-                '.creditly-wrapper .expiration-month-and-year',
-                '.creditly-wrapper .credit-card-number',
-                '.creditly-wrapper .security-code',
-                '.creditly-wrapper .card-type');
 
-            $(".creditly-card-form .submit").click(function (e) {
-                e.preventDefault();
-                var output = creditly.validate();
-                if (output) {
-                    // Your validated credit card output
-                    console.log(output);
+    <style>
+        .input-with-icon {
+            position: relative;
+        }
+        .input-with-icon i:first-child {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            z-index: 2;
+        }
+        .input-with-icon .form-control {
+            padding-left: 45px;
+        }
+        .cvv-tooltip {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            cursor: help;
+            z-index: 2;
+        }
+        .card-type-icon.active {
+            opacity: 1 !important;
+            transform: scale(1.1);
+        }
+        .text-danger {
+            color: var(--danger) !important;
+        }
+        .text-primary {
+            color: var(--primary) !important;
+        }
+        .text-muted {
+            color: var(--gray) !important;
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 5px;
+        }
+    </style>
+
+    <script>
+        // Format amount input
+        function formatAmount(input) {
+            // Remove any non-digit characters except decimal point
+            let value = input.value.replace(/[^\d.]/g, '');
+            
+            // Ensure only one decimal point
+            const decimalCount = (value.match(/\./g) || []).length;
+            if (decimalCount > 1) {
+                value = value.substring(0, value.lastIndexOf('.'));
+            }
+            
+            // Format to 2 decimal places
+            if (value.includes('.')) {
+                const parts = value.split('.');
+                if (parts[1].length > 2) {
+                    value = parts[0] + '.' + parts[1].substring(0, 2);
+                }
+            }
+            
+            // Update the input value
+            input.value = value;
+            
+            // Update the payment button text
+            const payButton = document.querySelector('button[type="submit"]');
+            if (payButton && value) {
+                const amount = parseFloat(value).toFixed(2);
+                payButton.innerHTML = `<i class="fas fa-lock"></i> Pay Securely ₹${amount}`;
+            }
+        }
+        
+        // Form validation
+        function validatePaymentForm() {
+            const form = document.getElementById('payment-form');
+            const expiryDate = document.getElementById('expiry-date').value;
+            const cvv = document.getElementById('cvv').value;
+            const cardHolder = document.getElementById('card-holder').value;
+            const amount = parseFloat(document.getElementById('payment-amount').value);
+            
+            // Validate amount
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid payment amount');
+                return false;
+            }
+            
+            // Validate expiry date
+            if (!validateExpiryDate(expiryDate)) {
+                alert('Please enter a valid expiry date (MM/YY) in the future');
+                return false;
+            }
+            
+            // Validate CVV
+            if (!/^\d{3,4}$/.test(cvv)) {
+                alert('Please enter a valid CVV (3 or 4 digits)');
+                return false;
+            }
+            
+            // Validate card holder name
+            if (!/^[a-zA-Z\s]{3,}$/.test(cardHolder)) {
+                alert('Please enter a valid cardholder name');
+                return false;
+            }
+            
+            // Show loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            
+            // Simulate API call (replace with actual payment processing)
+            return true;
+        }
+        
+        // Luhn algorithm for card validation
+        function luhnCheck(cardNumber) {
+            let sum = 0;
+            let shouldDouble = false;
+            
+            for (let i = cardNumber.length - 1; i >= 0; i--) {
+                let digit = parseInt(cardNumber.charAt(i));
+                
+                if (shouldDouble) {
+                    digit *= 2;
+                    if (digit > 9) {
+                        digit = (digit % 10) + 1;
+                    }
+                }
+                
+                sum += digit;
+                shouldDouble = !shouldDouble;
+            }
+            
+            return sum % 10 === 0;
+        }
+        
+        // Validate expiry date
+        function validateExpiryDate(expiryDate) {
+            if (!expiryDate || !/^(0[1-9]|1[0-2])\s*\/\s*([0-9]{2})$/.test(expiryDate)) {
+                return false;
+            }
+            
+            const [_, month, year] = expiryDate.match(/(\d{1,2})\s*\/\s*(\d{2})/);
+            const expiry = new Date(2000 + parseInt(year), parseInt(month), 0);
+            const currentDate = new Date();
+            
+            // Set to last day of the month for comparison
+            expiry.setMonth(expiry.getMonth() + 1);
+            expiry.setDate(0);
+            
+            return expiry > currentDate;
+        }
+
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked button and corresponding content
+                    button.classList.add('active');
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // Card number formatting
+            const cardNumberInput = document.getElementById('card-number');
+            const cardNumberPreview = document.getElementById('card-number-preview');
+            const cardTypeInput = document.getElementById('card-type-input');
+            const cardTypeText = document.getElementById('card-type-text');
+            
+            cardNumberInput.addEventListener('input', function(e) {
+                // Remove all non-digits
+                let value = e.target.value.replace(/\D/g, '');
+                
+                // Add space after every 4 digits
+                value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+                
+                // Update input value
+                e.target.value = value.trim();
+                
+                // Update preview
+                cardNumberPreview.textContent = value || '•••• •••• •••• ••••';
+                
+                // Update card type
+                const cardType = getCardType(value);
+                updateCardTypeIcon(cardType);
+                
+                // Update hidden input for server-side validation
+                cardTypeInput.value = cardType;
+                
+                // Show card type text
+                if (cardType !== 'unknown' && value.length > 0) {
+                    cardTypeText.textContent = cardType.charAt(0).toUpperCase() + cardType.slice(1) + ' Card';
+                } else {
+                    cardTypeText.textContent = '';
                 }
             });
+
+            // Cardholder name formatting
+            const cardNameInput = document.getElementById('card-holder');
+            const cardNamePreview = document.getElementById('card-name-preview');
+            
+            cardNameInput.addEventListener('input', function(e) {
+                cardNamePreview.textContent = e.target.value.toUpperCase() || 'YOUR NAME';
+            });
+
+            // Expiry date formatting
+            const expiryDateInput = document.getElementById('expiry-date');
+            const expiryDatePreview = document.getElementById('card-expiry-preview');
+            
+            expiryDateInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                
+                // Add slash after 2 digits
+                if (value.length === 2 && !value.includes('/')) {
+                    value += '/';
+                    e.target.value = value;
+                }
+                
+                // Update preview
+                expiryDatePreview.textContent = value || 'MM/YY';
+            });
+
+            // CVV hover effect
+            const cvvInput = document.getElementById('cvv');
+            
+            cvvInput.addEventListener('focus', function() {
+                document.querySelector('.card-preview').style.transform = 'rotateY(180deg)';
+            });
+            
+            cvvInput.addEventListener('blur', function() {
+                document.querySelector('.card-preview').style.transform = 'rotateY(0)';
+            });
+
+            // Helper function to detect card type
+            function getCardType(cardNumber) {
+                const cardNumberStr = cardNumber.replace(/\s+/g, '');
+                
+                // Visa
+                if (/^4/.test(cardNumberStr)) {
+                    return 'visa';
+                }
+                // Mastercard
+                else if (/^5[1-5]/.test(cardNumberStr)) {
+                    return 'mastercard';
+                }
+                // American Express
+                else if (/^3[47]/.test(cardNumberStr)) {
+                    return 'amex';
+                }
+                // Discover
+                else if (/^(6011|65|64[4-9]|622)/.test(cardNumberStr)) {
+                    return 'discover';
+                }
+                
+                return 'unknown';
+            }
+            
+            // Update card type icon
+            function updateCardTypeIcon(cardType) {
+                // Reset all icons
+                document.querySelectorAll('.card-type-icon').forEach(icon => {
+                    icon.classList.remove('active');
+                });
+                
+                // Activate the matching card type
+                const activeIcon = document.querySelector(`.card-type-icon[data-type="${cardType}"]`);
+                if (activeIcon) {
+                    activeIcon.classList.add('active');
+                }
+                
+                // Update card preview icon
+                const cardTypeIcons = {
+                    'visa': 'fa-cc-visa',
+                    'mastercard': 'fa-cc-mastercard',
+                    'amex': 'fa-cc-amex',
+                    'discover': 'fa-cc-discover',
+                    'default': 'fa-credit-card'
+                };
+                
+                const cardTypeElement = document.querySelector('.card-type i');
+                if (cardTypeElement) {
+                    cardTypeElement.className = 'fab ' + (cardTypeIcons[cardType] || cardTypeIcons['default']) + ' fa-2x';
+                }
+            }
+
+            // Form submission
+            const paymentForm = document.getElementById('payment-form');
+            if (paymentForm) {
+                paymentForm.addEventListener('submit', function(e) {
+                    // Add your form validation here
+                    // e.preventDefault(); // Uncomment to prevent form submission for demo
+                });
+            }
         });
     </script>
-    <!-- //credit-card -->
-    <div class="copy-wthree text-center">
-        <p>© 2018 Payment Tab Widget. All Rights Reserved | Design by
-            <a href="<?php echo base_url();?>payment/http://w3layouts.com/" target="_blank">W3layouts</a>
-        </p>
-    </div>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom Scripts -->
+    <script>
+        // Any additional scripts can be added here
+    </script>
 </body>
-<!-- //Body -->
-
 </html>

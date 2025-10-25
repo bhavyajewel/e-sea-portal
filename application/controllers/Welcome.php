@@ -95,6 +95,7 @@ class Welcome extends CI_Controller
 			'email' => $this->input->post('email'),
 			'password' => $newpassword,
 			'usertype' => '3',
+			'status'=>'1'
 
 
 
@@ -306,6 +307,10 @@ class Welcome extends CI_Controller
 			'city' => $this->input->post('city'),
 			'gender' => $this->input->post('gender'),
 			'contact' => $this->input->post('contact'),
+			'qualification' => $this->input->post('qualification'),
+			'skills' => $this->input->post('skills'),
+			'experience' => $this->input->post('experience'),
+			'domain' => $this->input->post('domain'),
 		);
 		$da = array(
 			'email' => $this->input->post('email'),
@@ -326,6 +331,41 @@ class Welcome extends CI_Controller
 			echo "<script>alert('Updation unsucessfull')</script>";
 		}
 
+	}
+	public function qualification_view()
+	{
+		if (isset($_SESSION['logined']) && $_SESSION['logined'] === true && $_SESSION['usertype'] === '3') {
+			$this->load->view('userheader');
+			$this->load->view('qualification_form');
+			$this->load->view('footer');
+		} else {
+			redirect('Welcome/login', 'refresh');
+		}
+	}
+
+	public function qualification_save()
+	{
+		if (!(isset($_SESSION['logined']) && $_SESSION['logined'] === true && $_SESSION['usertype'] === '3')) {
+			redirect('Welcome/login', 'refresh');
+			return;
+		}
+
+		$id = $this->session->userid;
+		$data = array(
+			'qualification' => $this->input->post('qualification'),
+			'skills' => $this->input->post('skills'),
+			'experience' => $this->input->post('experience'),
+			'domain' => $this->input->post('domain'),
+		);
+
+		$result = $this->Usermodel->publicupdation($data, $id);
+		if ($result) {
+			echo "<script>alert('Qualification details saved')</script>";
+			redirect('Welcome/user', 'refresh');
+		} else {
+			echo "<script>alert('Failed to save qualification details')</script>";
+			redirect('Welcome/qualification_view', 'refresh');
+		}
 	}
 	public function companyapproval()
 	{
@@ -981,12 +1021,35 @@ private function perform_google_login($email)
 
 
 	}
+	// public function payment()
+	// {
+	// 	$data['loginid'] = $this->uri->segment(3);
+	// 	$data['amount'] = $this->uri->segment(4);
+	// 	$this->load->view('payment', $data);
+	// }
+
+
 	public function payment()
-	{
-		$data['loginid'] = $this->uri->segment(3);
-		$data['amount'] = $this->uri->segment(4);
-		$this->load->view('payment', $data);
-	}
+{
+    // 1. Get the values from the URI segments
+    $login_id_from_uri = $this->uri->segment(3);
+    $amount_from_uri = $this->uri->segment(4);
+    
+    // 2. Assign loginid directly
+    $data['loginid'] = $login_id_from_uri;
+    
+    // 3. Validate and sanitize the amount segment
+    // Check if the URI segment 4 is numeric, if not, default to 0.00.
+    // This directly assigns the validated value to the data array key.
+    $data['amount'] = is_numeric($amount_from_uri) ? (float)$amount_from_uri : 0.00;
+    
+    // 4. Load the view with the guaranteed defined $data['amount']
+    $this->load->view('payment', $data);
+}
+
+
+
+
 	public function insertpayment()
 	{
 		$id = $this->session->userid;
@@ -1034,6 +1097,20 @@ private function perform_google_login($email)
 		redirect('Welcome/login', 'refresh');
 	}
 	}
+
+  public function jobrecommendations()
+  {
+    if (!(isset($_SESSION['logined']) && $_SESSION['logined'] === true && $_SESSION['usertype'] === '3')) {
+      redirect('Welcome/login', 'refresh');
+      return;
+    }
+    $this->load->model('Job_model');
+    $user_id = $this->session->userid;
+    $data['user'] = $this->Job_model->get_user($user_id);
+    $data['recommended_jobs'] = $this->Job_model->recommend_jobs($user_id, 3);
+    $data['k'] = 3;
+    $this->load->view('job_recommendation_view', $data);
+  }
 	public function cancelstatus()
 	{
 		$shipid = $this->uri->segment(3);
@@ -1574,25 +1651,65 @@ else{
 }
 }
 
-public function jobapplynow()
+	public function jobapplynow()
 	{
-		// $id = $this->input->post('hide');
 		$jobid = $this->uri->segment(3);
 		$loginid = $this->session->userid;
 
-		$date= date('Y-m-d H:i:s');
-		$data = array(
-			'jobid'=>$jobid,
-			'loginid' => $loginid,
-			'date' => $date,
-          );
+		// Server-side: handle PDF CV upload
+		$description = $this->input->post('description');
+		$cvUploaded = false;
+		$uploadError = '';
 
-		$result = $this->Usermodel->jobapplynow_1($data,$jobid);
+		if (!empty($_FILES['cv']['name'])) {
+			$targetDir = FCPATH . 'uploads/cv/' . $loginid . '/' . $jobid . '/';
+			if (!is_dir($targetDir)) {
+				@mkdir($targetDir, 0755, true);
+			}
+
+			$config = array();
+			$config['upload_path']      = $targetDir;
+			$config['allowed_types']    = 'pdf';
+			$config['max_size']         = 2048; // 2MB
+			$config['file_ext_tolower'] = true;
+			$config['detect_mime']      = true;
+			$config['overwrite']        = false;
+			$config['file_name']        = 'cv_' . $loginid . '_' . $jobid . '_' . time();
+
+			$this->load->library('upload');
+			$this->upload->initialize($config);
+
+			if ($this->upload->do_upload('cv')) {
+				$cvUploaded = true;
+			} else {
+				$uploadError = $this->upload->display_errors('', '');
+			}
+		} else {
+			$uploadError = 'CV file is required and must be a PDF.';
+		}
+
+		if (!$cvUploaded) {
+			echo "<script>alert('" . addslashes($uploadError) . "');</script>";
+			redirect('Welcome/jobviewscompany', 'refresh');
+			return;
+		}
+
+		$date = date('Y-m-d H:i:s');
+		$data = array(
+			'jobid'   => $jobid,
+			'loginid' => $loginid,
+			'date'    => $date,
+			// If your table has these columns, you can uncomment and use them:
+			// 'cv_path' => 'uploads/cv/' . $loginid . '/' . $jobid . '/' . $this->upload->data('file_name'),
+			// 'description' => $description,
+		);
+
+		$result = $this->Usermodel->jobapplynow_1($data, $jobid);
 		if ($result) {
-			echo "<script>alert('job applied sucessfully')</script>";
+			echo "<script>alert('Job applied successfully with CV uploaded.')</script>";
 			redirect('Welcome/companyhome', 'refresh');
 		} else {
-			echo "<script>alert('job apply is unsucessfull')</script>";
+			echo "<script>alert('Job apply is unsuccessful')</script>";
 		}
 
 	}

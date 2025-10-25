@@ -73,6 +73,12 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 						<a class="nav-link" href="<?php echo base_url();?>Welcome/jobviews">Job Apply</a>
 					</li>
 					<li class="nav-item mr-lg-2 mb-lg-0 mb-2">
+						<a class="nav-link" href="<?php echo base_url();?>Welcome/qualification_view">Add Qualification</a>
+					</li>
+					<li class="nav-item mr-lg-2 mb-lg-0 mb-2">
+						<a class="nav-link" href="<?php echo base_url('job-recommendations'); ?>">Job Recommendations</a>
+					</li>
+					<li class="nav-item mr-lg-2 mb-lg-0 mb-2">
 						<a class="nav-link" href="<?php echo base_url();?>Welcome/newstableviews">News</a>
 					</li>
 					<li class="nav-item dropdown mr-lg-2 mb-lg-0 mb-2">

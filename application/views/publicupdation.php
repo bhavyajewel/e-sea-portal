@@ -33,6 +33,11 @@
 	</td></tr>
 	<tr><td>contact</td><td><input type="text" name="contact" class="form-control" value="<?php echo $row->contact;?>"></td></tr>
 	<tr><td>email</td><td><input type="email" name="email" class="form-control" value="<?php echo $row->email;?>"></td></tr>
+	<tr><td colspan="2"><hr></td></tr>
+	<tr><td><strong>Qualification</strong></td><td><input type="text" name="qualification" class="form-control" value="<?php echo isset($row->qualification) ? $row->qualification : ''; ?>"></td></tr>
+	<tr><td><strong>Skills</strong> <small>(comma-separated)</small></td><td><textarea name="skills" class="form-control" rows="2"><?php echo isset($row->skills) ? $row->skills : ''; ?></textarea></td></tr>
+	<tr><td><strong>Experience</strong> (years)</td><td><input type="number" min="0" name="experience" class="form-control" value="<?php echo isset($row->experience) ? $row->experience : ''; ?>"></td></tr>
+	<tr><td><strong>Preferred Domain</strong></td><td><input type="text" name="domain" class="form-control" value="<?php echo isset($row->domain) ? $row->domain : ''; ?>"></td></tr>
 	<tr><td></td><td><input type="submit" value="update" class="btn btn-success"></td></tr>
     <?php } ?>
 	</table>
