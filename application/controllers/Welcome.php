@@ -71,6 +71,119 @@ class Welcome extends CI_Controller
 	{
 		$this->load->view('user');
 	}
+	
+	public function forgotpassword() {
+		$this->load->view('forgot_password');
+	}
+	
+	public function process_forgot_password() {
+		$this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+		
+		if ($this->form_validation->run() == FALSE) {
+			$this->session->set_flashdata('error', 'Please enter a valid email address.');
+			redirect('Welcome/forgotpassword');
+		}
+		
+		$email = $this->input->post('email');
+		$user = $this->Usermodel->check_email_exists($email);
+		
+		if ($user) {
+			// Generate a random token
+			$token = bin2hex(random_bytes(32));
+			
+			// Save token to database
+			if ($this->Usermodel->update_reset_token($email, $token)) {
+				// Send email with reset link
+				$reset_link = base_url("Welcome/reset_password/$token");
+				
+				// Email configuration
+				$config = array(
+					'protocol' => 'smtp',
+					'smtp_host' => 'smtp.gmail.com',
+					'smtp_port' => 587,
+					'smtp_user' => 'your-email@gmail.com', // Replace with your email
+					'smtp_pass' => 'your-email-password', // Replace with your email password
+					'mailtype' => 'html',
+					'charset' => 'iso-8859-1',
+					'smtp_crypto' => 'tls',
+					'wordwrap' => TRUE
+				);
+				
+				$this->load->library('email', $config);
+				$this->email->set_newline("\r\n");
+				
+				$this->email->from('your-email@gmail.com', 'Vizhinjam Port');
+				$this->email->to($email);
+				$this->email->subject('Password Reset Request');
+				
+				$message = "<p>You have requested to reset your password.</p>";
+				$message .= "<p>Please click the following link to reset your password:</p>";
+				$message .= "<p><a href='$reset_link'>$reset_link</a></p>";
+				$message .= "<p>This link will expire in 1 hour.</p>";
+				$message .= "<p>If you did not request this, please ignore this email.</p>";
+				
+				$this->email->message($message);
+				
+				if ($this->email->send()) {
+					$this->session->set_flashdata('success', 'Password reset link has been sent to your email.');
+				} else {
+					log_message('error', 'Email sending failed: ' . $this->email->print_debugger());
+					$this->session->set_flashdata('error', 'Failed to send reset email. Please try again.');
+				}
+			} else {
+				$this->session->set_flashdata('error', 'Failed to process your request. Please try again.');
+			}
+		} else {
+			$this->session->set_flashdata('success', 'If your email exists in our system, you will receive a password reset link.');
+		}
+		
+		redirect('Welcome/forgotpassword');
+	}
+	
+	public function reset_password($token = null) {
+		if (empty($token)) {
+			show_404();
+		}
+		
+		$user = $this->Usermodel->get_user_by_token($token);
+		
+		if (!$user) {
+			$this->session->set_flashdata('error', 'Invalid or expired reset link. Please request a new one.');
+			redirect('Welcome/forgotpassword');
+		}
+		
+		$data['token'] = $token;
+		$this->load->view('reset_password', $data);
+	}
+	
+	public function process_reset_password() {
+		$this->form_validation->set_rules('password', 'Password', 'required|min_length[6]');
+		$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required|matches[password]');
+		$this->form_validation->set_rules('token', 'Token', 'required');
+		
+		if ($this->form_validation->run() == FALSE) {
+			$this->session->set_flashdata('error', validation_errors());
+			redirect('Welcome/reset_password/' . $this->input->post('token'));
+		}
+		
+		$token = $this->input->post('token');
+		$password = $this->input->post('password');
+		
+		$user = $this->Usermodel->get_user_by_token($token);
+		
+		if (!$user) {
+			$this->session->set_flashdata('error', 'Invalid or expired reset link. Please request a new one.');
+			redirect('Welcome/forgotpassword');
+		}
+		
+		if ($this->Usermodel->update_password($user->email, $password)) {
+			$this->session->set_flashdata('success', 'Your password has been reset successfully. You can now login with your new password.');
+			redirect('Welcome/login');
+		} else {
+			$this->session->setflashdata('error', 'Failed to reset password. Please try again.');
+			redirect('Welcome/reset_password/' . $token);
+		}
+	}
 
 	public function userreg()
 	{
@@ -1024,33 +1137,134 @@ private function perform_google_login($email)
 	// public function payment()
 	// {
 	// 	$data['loginid'] = $this->uri->segment(3);
-	// 	$data['amount'] = $this->uri->segment(4);
-	// 	$this->load->view('payment', $data);
-	// }
-
-
 	public function payment()
-{
-    // 1. Get the values from the URI segments
-    $login_id_from_uri = $this->uri->segment(3);
-    $amount_from_uri = $this->uri->segment(4);
+    {
+        $data['loginid'] = $this->uri->segment(3);
+        $data['amount'] = $this->uri->segment(4);
+        $this->load->view('payment', $data);
+    }
+
+    /**
+     * Process payment using SVM
+     */
+    public function process_payment() {
+        // Get form data
+        $card_number = $this->input->post('card_number');
+        $expiry_date = $this->input->post('expiry_date');
+        $cvv = $this->input->post('cvv');
+        $amount = $this->input->post('amount');
+        $loginid = $this->input->post('loginid');
+        $card_holder = $this->input->post('card_holder');
+
+        // Basic validation
+        if (empty($card_number) || empty($expiry_date) || empty($cvv) || empty($amount) || empty($loginid)) {
+            $this->session->set_flashdata('error', 'All fields are required');
+            redirect('welcome/payment_failed');
+            return;
+        }
+
+        // Process payment (in a real app, this would be a call to a payment gateway)
+        // For demo purposes, we'll just generate a random success/failure
+        $success = (rand(1, 10) > 3); // 70% success rate for demo
+
+        if ($success) {
+            // Generate a fake transaction ID
+            $transaction_id = 'TXN' . strtoupper(uniqid());
+            
+            // Here you would typically save the payment details to your database
+            // For example:
+            // $payment_data = array(
+            //     'user_id' => $loginid,
+            //     'amount' => $amount,
+            //     'transaction_id' => $transaction_id,
+            //     'payment_method' => 'card',
+            //     'status' => 'completed',
+            //     'created_at' => date('Y-m-d H:i:s')
+            // );
+            // $this->db->insert('payments', $payment_data);
+            
+            $this->session->set_flashdata('amount', $amount);
+            $this->session->set_flashdata('transaction_id', $transaction_id);
+            redirect('welcome/payment_success');
+        } else {
+            $this->session->set_flashdata('error', 'Payment declined. Please check your card details and try again.');
+            redirect('welcome/payment_failed');
+        }
+        // Mock response
+        return [
+            'success' => true,
+            'transaction_id' => 'txn_' . bin2hex(random_bytes(8)),
+            'amount' => $payment_data['amount'],
+            'currency' => $payment_data['currency'],
+            'status' => 'succeeded',
+            'timestamp' => time()
+        ];
+        
+        /*
+        // Example of how to implement with a real payment processor (e.g., Stripe)
+        try {
+            \Stripe\Stripe::setApiKey('your_secret_key_here');
+            
+            $payment_intent = \Stripe\PaymentIntent::create([
+                'amount' => $payment_data['amount'] * 100, // Convert to cents
+                'currency' => $payment_data['currency'],
+                'payment_method' => $payment_data['payment_method_id'],
+                'confirmation_method' => 'manual',
+                'confirm' => true,
+                'metadata' => $payment_data['metadata']
+            ]);
+            
+            return [
+                'success' => true,
+                'transaction_id' => $payment_intent->id,
+                'amount' => $payment_data['amount'],
+                'currency' => $payment_data['currency'],
+                'status' => $payment_intent->status
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+        */
+    }
     
-    // 2. Assign loginid directly
-    $data['loginid'] = $login_id_from_uri;
+    /**
+     * Payment success page
+     */
+    public function payment_success() {
+        $data['amount'] = $this->session->flashdata('amount');
+        $data['transaction_id'] = $this->session->flashdata('transaction_id');
+        $this->load->view('payment_success', $data);
+    }
     
-    // 3. Validate and sanitize the amount segment
-    // Check if the URI segment 4 is numeric, if not, default to 0.00.
-    // This directly assigns the validated value to the data array key.
-    $data['amount'] = is_numeric($amount_from_uri) ? (float)$amount_from_uri : 0.00;
+    /**
+     * Payment failed page
+     */
+    public function payment_failed() {
+        $data['error'] = $this->session->flashdata('error');
+        $this->load->view('payment_failed', $data);
+    }
     
-    // 4. Load the view with the guaranteed defined $data['amount']
-    $this->load->view('payment', $data);
-}
-
-
-
-
-	public function insertpayment()
+    /**
+     * Generate SVM token (for client-side use)
+     */
+    public function generate_svm_token() {
+        // In a real implementation, you would call your payment processor's API
+        // to generate a client token or setup intent
+        $response = [
+            'status' => 'success',
+            'token' => 'svm_' . bin2hex(random_bytes(16)),
+            'timestamp' => time(),
+            'expires_in' => 3600 // 1 hour
+        ];
+        
+        header('Content-Type: application/json');
+        echo json_encode($response);
+    }
+    
+    public function insertpayment()
 	{
 		$id = $this->session->userid;
 		$loginid = $this->input->post('loginid');

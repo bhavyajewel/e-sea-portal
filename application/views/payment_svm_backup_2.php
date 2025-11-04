@@ -558,6 +558,9 @@
                     <form action="<?php echo base_url();?>Welcome/process_payment" method="post" id="payment-form">
                         <input type="hidden" name="loginid" value="<?php echo $loginid;?>">
                         
+                        <!-- SVM Card Element will be inserted here -->
+                        <div id="svm-element"></div>
+                        
                         <div class="form-group">
                             <label class="form-label" for="payment-amount">Payment Amount (₹) <span class="text-danger">*</span></label>
                             <div class="input-with-icon">
@@ -613,7 +616,6 @@
                                     <input type="text" id="expiry-date" name="expiry_date" class="form-control" placeholder="MM/YY" maxlength="5" oninput="formatExpiryDate(this)" required>
                                 </div>
                                 <small class="text-muted">MM/YY format</small>
-                                <span id="expiry-error" class="error-message"></span>
                             </div>
                             <div class="form-col">
                                 <label class="form-label" for="cvv">CVV <span class="text-danger">*</span></label>
@@ -623,7 +625,6 @@
                                     <i class="fas fa-question-circle cvv-tooltip" title="3 or 4 digit code on the back of your card"></i>
                                 </div>
                                 <small class="text-muted">3 or 4 digits</small>
-                                <span id="cvv-error" class="error-message"></span>
                             </div>
                         </div>
 
@@ -857,27 +858,43 @@
             // Validate amount
             if (isNaN(amount) || amount <= 0) {
                 alert('Please enter a valid payment amount');
+                return false;
+            }
+            
+            // Validate card holder name
+            if (!/^[a-zA-Z\s]{3,}$/.test(cardHolder)) {
+                alert('Please enter a valid cardholder name');
+                return false;
+            }
+            
+            // Let SVM handle the card validation
+            return new Promise((resolve) => {
+                // The actual validation is handled by SVM's real-time validation
+                resolve(true);
+            });
+            
+            // Show loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            
+            // Simulate API call (replace with actual payment processing)
+            return true;
+        }
+        
         // Luhn algorithm for card validation
         function luhnCheck(cardNumber) {
             let sum = 0;
             let shouldDouble = false;
             
-            // Remove all non-digit characters
-            cardNumber = cardNumber.replace(/\D/g, '');
-            
-            // Check if the card number is empty or contains non-digits
-            if (!cardNumber || !/^\d+$/.test(cardNumber)) {
-                return false;
-            }
-            
-            // Luhn algorithm
             for (let i = cardNumber.length - 1; i >= 0; i--) {
                 let digit = parseInt(cardNumber.charAt(i));
                 
                 if (shouldDouble) {
                     digit *= 2;
                     if (digit > 9) {
-                        digit -= 9;
+                        digit = (digit % 10) + 1;
                     }
                 }
                 
@@ -885,19 +902,16 @@
                 shouldDouble = !shouldDouble;
             }
             
-            return (sum % 10) === 0;
+            return sum % 10 === 0;
         }
         
         // Validate expiry date
         function validateExpiryDate(expiryDate) {
-            const expiryError = document.getElementById('expiry-error');
-            const [month, year] = expiryDate.split('/');
-            
-            if (!month || !year || month.length !== 2 || year.length !== 2) {
-                expiryError.textContent = 'Invalid expiry date format (MM/YY)';
+            if (!expiryDate || !/^(0[1-9]|1[0-2])\s*\/\s*([0-9]{2})$/.test(expiryDate)) {
                 return false;
             }
             
+            const [_, month, year] = expiryDate.match(/(\d{1,2})\s*\/\s*(\d{2})/);
             const expiry = new Date(2000 + parseInt(year), parseInt(month), 0);
             const currentDate = new Date();
             
@@ -1060,13 +1074,23 @@
     </script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- SVM Integration -->
+    <script src="https://js.safevault.com/v1/"></script>
     <style>
-        /* Error message styling */
-        .error-message {
-            color: var(--danger);
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-            display: block;
+        #svm-element {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 10px 15px;
+            margin: 10px 0;
+            background: white;
+            height: 44px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+        }
+        #svm-element.svm-complete {
+            border-color: #28a745;
+        }
+        #svm-element.svm-error {
+            border-color: #dc3545;
         }
     </style>
     <!-- Custom Scripts -->

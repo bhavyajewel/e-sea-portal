@@ -99,6 +99,38 @@ class Usermodel extends CI_Model
       $this->db->where('id', $id2);
       return $this->db->get()->row();
    }
+   public function check_email_exists($email) {
+      $this->db->where('email', $email);
+      $query = $this->db->get('login');
+      return $query->num_rows() > 0 ? $query->row() : false;
+   }
+   
+   public function update_reset_token($email, $token) {
+      $data = array(
+         'reset_token' => $token,
+         'reset_expires' => date('Y-m-d H:i:s', strtotime('+1 hour'))
+      );
+      $this->db->where('email', $email);
+      return $this->db->update('login', $data);
+   }
+   
+   public function get_user_by_token($token) {
+      $this->db->where('reset_token', $token);
+      $this->db->where('reset_expires >', date('Y-m-d H:i:s'));
+      $query = $this->db->get('login');
+      return $query->num_rows() > 0 ? $query->row() : false;
+   }
+   
+   public function update_password($email, $password) {
+      $hashed_password = $this->hash_password($password);
+      $data = array(
+         'password' => $hashed_password,
+         'reset_token' => null,
+         'reset_expires' => null
+      );
+      $this->db->where('email', $email);
+      return $this->db->update('login', $data);
+   }
    public function companyupdation_dataview($id)
    {
       $this->db->select('*');

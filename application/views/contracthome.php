@@ -158,7 +158,6 @@
 						<div class="slider-text">
 							<h6>With our modern fleet</h6>
 							<h3>Tender Portal</h3>
-							<!-- <p>Fast, secure, and reliable shipping across the globe.</p> -->
 						</div>
 					</div>
 				</div>
